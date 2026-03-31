@@ -1142,6 +1142,8 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
     try {
       const orderDetails = {
         name: formData.name,
+        fullName: formData.name,
+        Name: formData.name,
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
