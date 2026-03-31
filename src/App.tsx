@@ -1140,10 +1140,21 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
     setIsSubmitting(true);
 
     try {
+      const nameParts = formData.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       const orderDetails = {
         name: formData.name,
         fullName: formData.name,
         Name: formData.name,
+        customerName: formData.name,
+        firstName: firstName,
+        lastName: lastName,
+        fname: firstName,
+        lname: lastName,
+        first_name: firstName,
+        last_name: lastName,
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
@@ -1156,14 +1167,15 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         orderDate: new Date().toLocaleString()
       };
 
-      // Send data to Google Apps Script
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec', {
+      // Send data to Google Apps Script - using URL params AND URLSearchParams for max compatibility
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const params = new URLSearchParams(orderDetails as any);
+      const finalUrl = `${scriptUrl}?${params.toString()}`;
+
+      await fetch(finalUrl, {
         method: 'POST',
-        mode: 'no-cors', // Apps Script requires no-cors for simple redirects
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderDetails),
+        mode: 'no-cors',
+        body: params,
       });
 
       // Since we use no-cors, we won't get a readable response, but we assume success if no error is thrown
