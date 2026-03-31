@@ -1147,7 +1147,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       };
 
       // Send data to Google Apps Script
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxBNS324lv0DAo3kiKzKEk5ohyD24EmmTgPiokXoJ-PVGryKzip6BD5vrVGubRSh1K0lQ/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec', {
         method: 'POST',
         mode: 'no-cors', // Apps Script requires no-cors for simple redirects
         headers: {
