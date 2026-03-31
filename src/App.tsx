@@ -1119,6 +1119,13 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
   const [isCheckingOut, setIsCheckingOut] = useState(startCheckout);
   const [orderComplete, setOrderComplete] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'UPI'>('COD');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    address: ''
+  });
 
   React.useEffect(() => {
     if (isOpen) {
@@ -1126,15 +1133,44 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
     }
   }, [isOpen, startCheckout]);
 
-  const handleCheckout = (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderComplete(true);
-    setTimeout(() => {
-      clearCart();
-      setOrderComplete(false);
-      setIsCheckingOut(false);
-      onClose();
-    }, 3000);
+    setIsSubmitting(true);
+
+    try {
+      const orderDetails = {
+        ...formData,
+        paymentMethod,
+        total,
+        items: cart.map(item => `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join(', '),
+        orderDate: new Date().toLocaleString()
+      };
+
+      // Send data to Google Apps Script
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxBNS324lv0DAo3kiKzKEk5ohyD24EmmTgPiokXoJ-PVGryKzip6BD5vrVGubRSh1K0lQ/exec', {
+        method: 'POST',
+        mode: 'no-cors', // Apps Script requires no-cors for simple redirects
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderDetails),
+      });
+
+      // Since we use no-cors, we won't get a readable response, but we assume success if no error is thrown
+      setOrderComplete(true);
+      setTimeout(() => {
+        clearCart();
+        setOrderComplete(false);
+        setIsCheckingOut(false);
+        setFormData({ fullName: '', phone: '', email: '', address: '' });
+        onClose();
+      }, 3000);
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      alert('There was an error placing your order. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -1176,6 +1212,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                   <div className="space-y-2">
                     <h3 className="text-4xl font-display text-white">ORDER PLACED</h3>
                     <p className="text-white/40 font-serif italic text-lg">"Thank you for choosing excellence."</p>
+                    <p className="text-accent/60 text-sm">Order details sent to restaurant.</p>
                   </div>
                 </div>
               ) : isCheckingOut ? (
@@ -1191,19 +1228,46 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                   <div className="space-y-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Full Name</label>
-                      <input required type="text" className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" placeholder="Your name" />
+                      <input 
+                        required 
+                        type="text" 
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
+                        placeholder="Your name" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Phone Number</label>
-                      <input required type="tel" className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" placeholder="+91 00000 00000" />
+                      <input 
+                        required 
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
+                        placeholder="+91 00000 00000" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Email Address (Optional)</label>
-                      <input type="email" className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" placeholder="your@email.com" />
+                      <input 
+                        type="email" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
+                        placeholder="your@email.com" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Delivery Address</label>
-                      <textarea required rows={3} className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg resize-none text-white" placeholder="Your address"></textarea>
+                      <textarea 
+                        required 
+                        rows={3} 
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg resize-none text-white" 
+                        placeholder="Your address"
+                      ></textarea>
                     </div>
                     <div className="space-y-4">
                       <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Payment Method</p>
@@ -1243,7 +1307,23 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                       <span className="text-xs font-bold text-white/40 tracking-widest uppercase">Total Amount</span>
                       <span className="text-4xl font-display text-accent">₹{total}</span>
                     </div>
-                    <button type="submit" className="btn-primary w-full py-5 text-sm tracking-[0.3em] font-bold uppercase">Place Order</button>
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className={cn(
+                        "btn-primary w-full py-5 text-sm tracking-[0.3em] font-bold uppercase flex items-center justify-center gap-3",
+                        isSubmitting && "opacity-70 cursor-not-allowed"
+                      )}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                          SENDING...
+                        </>
+                      ) : (
+                        "Place Order"
+                      )}
+                    </button>
                   </div>
                 </form>
               ) : cart.length === 0 ? (
