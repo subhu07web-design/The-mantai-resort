@@ -415,8 +415,8 @@ const HomePage = ({ onReservationOpen }: { onReservationOpen: () => void }) => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                    <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm">ADD TO CART</button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6">
+                    <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm shadow-2xl">ADD TO CART</button>
                   </div>
                 </div>
                 <div className="space-y-2 text-center">
@@ -718,8 +718,8 @@ const MenuPage = () => {
                   <div className="absolute top-4 right-4 bg-primary/80 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold text-accent tracking-widest uppercase z-10">
                     {item.category}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                    <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm">ADD TO CART</button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6">
+                    <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm shadow-2xl">ADD TO CART</button>
                   </div>
                 </div>
                 <div className="p-8 space-y-6 flex-1 flex flex-col">
