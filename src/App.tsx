@@ -1121,10 +1121,12 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'UPI'>('COD');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     phone: '',
     email: '',
-    address: ''
+    address: '',
+    city: '',
+    pin: ''
   });
 
   React.useEffect(() => {
@@ -1139,10 +1141,16 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
 
     try {
       const orderDetails = {
-        ...formData,
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        pin: formData.pin,
+        product: cart.map(item => item.name).join(', '),
+        quantity: cart.reduce((acc, item) => acc + item.quantity, 0),
+        price: total,
         paymentMethod,
-        total,
-        items: cart.map(item => `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join(', '),
         orderDate: new Date().toLocaleString()
       };
 
@@ -1162,7 +1170,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         clearCart();
         setOrderComplete(false);
         setIsCheckingOut(false);
-        setFormData({ fullName: '', phone: '', email: '', address: '' });
+        setFormData({ name: '', phone: '', email: '', address: '', city: '', pin: '' });
         onClose();
       }, 3000);
     } catch (error) {
@@ -1231,8 +1239,8 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                       <input 
                         required 
                         type="text" 
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
                         placeholder="Your name" 
                       />
@@ -1258,11 +1266,35 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                         placeholder="your@email.com" 
                       />
                     </div>
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">City</label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={formData.city}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                          className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
+                          placeholder="Your city" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Pin Code</label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={formData.pin}
+                          onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
+                          className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg text-white" 
+                          placeholder="000000" 
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Delivery Address</label>
                       <textarea 
                         required 
-                        rows={3} 
+                        rows={2} 
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg resize-none text-white" 
