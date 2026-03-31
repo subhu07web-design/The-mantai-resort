@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bebas Neue", cursive;
+  --font-serif: "Cormorant Garamond", serif;
+  
+  --color-primary: #1A1A1A; /* Deep Charcoal */
+  --color-secondary: #2D2D1E; /* Deep Olive */
+  --color-accent: #C5A028; /* Antique Gold */
+  --color-cream: #0A0A0A; /* Pure Black Background */
+  --color-paper: #121212; /* Slightly lighter for cards */
+  
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-white/90 font-sans selection:bg-accent selection:text-white;
+  }
+  
+  h1, h2, h3, h4 {
+    @apply tracking-tight text-white;
+  }
+}
+
+.glass-nav {
+  @apply bg-cream/90 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50;
+}
+
+.btn-primary {
+  @apply bg-accent text-primary px-8 py-4 rounded-full font-bold transition-all hover:bg-accent/90 hover:shadow-[0_0_20px_rgba(197,160,40,0.3)] hover:-translate-y-1 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-white text-primary px-8 py-4 rounded-full font-bold transition-all hover:bg-white/90 hover:shadow-xl hover:-translate-y-1 active:scale-95;
+}
+
+.btn-outline {
+  @apply border border-white/20 text-white px-8 py-4 rounded-full font-medium transition-all hover:bg-white hover:text-primary hover:shadow-xl hover:-translate-y-1 active:scale-95;
+}
+
+.card-luxury {
+  @apply bg-paper rounded-3xl border border-white/5 shadow-2xl transition-all hover:border-accent/20 hover:-translate-y-2;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
+}
+
+.section-divider {
+  @apply w-24 h-px bg-accent/30 mx-auto my-8;
+}
+
+.luxury-border {
+  @apply relative p-1;
+}
+
+.luxury-border::before {
+  content: '';
+  @apply absolute inset-0 rounded-[inherit] border border-accent/20 -m-2 pointer-events-none;
+}
+

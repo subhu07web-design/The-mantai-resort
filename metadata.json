@@ -1,0 +1,5 @@
+{
+  "name": "THE MANDAI RESORT",
+  "description": "THE MANDAI RESORT - A premium family restaurant in Jorhatia, Assam offering authentic flavors, unlimited buffet, and outdoor seating.",
+  "requestFramePermissions": ["geolocation"]
+}
