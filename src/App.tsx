@@ -251,17 +251,22 @@ const HomePage = ({ onReservationOpen }: { onReservationOpen: () => void }) => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center px-4 sm:px-8 overflow-hidden">
+      <section className="relative h-screen flex items-center px-4 sm:px-8 overflow-hidden bg-primary">
         <div className="absolute inset-0 z-0">
-          <motion.img 
+          <motion.div
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-            src="https://delivery.pixelbin.io/predictions/outputs/1d/sr/upscaleRestricted/019d43cd-df9c-7009-97be-eb2faa66d605/result_0.jpeg" 
-            alt="THE MANDAI RESORT Ambience" 
-            className="w-full h-full object-cover brightness-[0.65]"
-            referrerPolicy="no-referrer"
-          />
+            className="w-full h-full"
+          >
+            <img 
+              src="https://res.cloudinary.com/duy2rot8s/image/upload/v1774958999/mantai_banner_img2_nchgiw.webp" 
+              alt="THE MANDAI RESORT Ambience" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </motion.div>
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-center justify-center">
@@ -1503,6 +1508,7 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
       const reservationDetails = {
         type: 'Table Reservation',
+        product: `Table Reservation for ${formData.guests} Guests`,
         name: formData.name,
         fullName: formData.name,
         Name: formData.name,
@@ -1510,6 +1516,14 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         firstName: firstName,
         lastName: lastName,
         phone: formData.phone,
+        email: 'reservation@mandairesort.com',
+        address: `Reservation Date: ${formData.date}, Time: ${formData.time}`,
+        city: 'Jorhatia',
+        pin: '785001',
+        quantity: parseInt(formData.guests, 10),
+        price: 0,
+        paymentMethod: 'Table Booking',
+        orderDate: new Date().toLocaleString(),
         date: formData.date,
         time: formData.time,
         guests: formData.guests,
@@ -1518,7 +1532,11 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
       };
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
-      const params = new URLSearchParams(reservationDetails as any);
+      const params = new URLSearchParams();
+      Object.entries(reservationDetails).forEach(([key, value]) => {
+        params.append(key, String(value));
+      });
+      
       const finalUrl = `${scriptUrl}?${params.toString()}`;
 
       await fetch(finalUrl, {
@@ -1526,6 +1544,9 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         mode: 'no-cors',
         body: params,
       });
+
+      // Add a small artificial delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       setIsSubmitting(false);
       setIsSuccess(true);
