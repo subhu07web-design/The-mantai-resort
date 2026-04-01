@@ -993,7 +993,11 @@ const ContactPage = () => {
       };
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
-      const params = new URLSearchParams(contactDetails as any);
+      const params = new URLSearchParams();
+      Object.entries(contactDetails).forEach(([key, value]) => {
+        params.append(key, String(value));
+      });
+      
       const finalUrl = `${scriptUrl}?${params.toString()}`;
 
       await fetch(finalUrl, {
@@ -1001,6 +1005,9 @@ const ContactPage = () => {
         mode: 'no-cors',
         body: params,
       });
+
+      // Add a small delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       alert(`Thank you, ${formData.firstName}! Your message regarding "${formData.subject}" has been sent.`);
       setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
