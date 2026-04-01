@@ -1189,6 +1189,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       const lastName = nameParts.slice(1).join(' ') || '';
 
       const orderDetails = {
+        type: 'Food Order',
         name: formData.name,
         fullName: formData.name,
         Name: formData.name,
@@ -1200,20 +1201,24 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         first_name: firstName,
         last_name: lastName,
         phone: formData.phone,
-        email: formData.email,
+        email: formData.email || 'N/A',
         address: formData.address,
         city: formData.city,
         pin: formData.pin,
-        product: cart.map(item => item.name).join(', '),
+        product: cart.map(item => `${item.name} (x${item.quantity})`).join(', '),
         quantity: cart.reduce((acc, item) => acc + item.quantity, 0),
         price: total,
         paymentMethod,
         orderDate: new Date().toLocaleString()
       };
 
-      // Send data to Google Apps Script - using URL params AND URLSearchParams for max compatibility
+      // Send data to Google Apps Script
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
-      const params = new URLSearchParams(orderDetails as any);
+      const params = new URLSearchParams();
+      Object.entries(orderDetails).forEach(([key, value]) => {
+        params.append(key, String(value));
+      });
+      
       const finalUrl = `${scriptUrl}?${params.toString()}`;
 
       await fetch(finalUrl, {
@@ -1222,7 +1227,9 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         body: params,
       });
 
-      // Since we use no-cors, we won't get a readable response, but we assume success if no error is thrown
+      // Add a small delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       setOrderComplete(true);
       setTimeout(() => {
         clearCart();
