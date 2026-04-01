@@ -987,6 +987,7 @@ const ContactPage = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        gmail: formData.email,
         subject: formData.subject,
         message: formData.message,
         contactDate: new Date().toLocaleString()
@@ -994,20 +995,31 @@ const ContactPage = () => {
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
-      Object.entries(contactDetails).forEach(([key, value]) => {
-        params.append(key, String(value));
-      });
+      params.append('type', 'Contact Inquiry');
+      params.append('name', `${formData.firstName} ${formData.lastName}`);
+      params.append('fullName', `${formData.firstName} ${formData.lastName}`);
+      params.append('firstName', formData.firstName);
+      params.append('lastName', formData.lastName);
+      params.append('email', formData.email);
+      params.append('gmail', formData.email);
+      params.append('phone no', 'N/A');
+      params.append('subject', formData.subject);
+      params.append('message', formData.message);
+      params.append('contactDate', new Date().toLocaleString());
       
-      const finalUrl = `${scriptUrl}?${params.toString()}`;
+      console.log('Sending contact inquiry to:', scriptUrl);
 
-      await fetch(finalUrl, {
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        body: params,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
       });
 
       // Add a small delay to ensure processing
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       alert(`Thank you, ${formData.firstName}! Your message regarding "${formData.subject}" has been sent.`);
       setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
@@ -1225,20 +1237,39 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       // Send data to Google Apps Script
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
-      Object.entries(orderDetails).forEach(([key, value]) => {
-        params.append(key, String(value));
-      });
       
-      const finalUrl = `${scriptUrl}?${params.toString()}`;
+      // Exact fields requested by user
+      params.append('name', formData.name);
+      params.append('phone no', formData.phone);
+      params.append('gmail', formData.email || 'N/A');
+      params.append('product', cart.map(item => `${item.name} (x${item.quantity})`).join(', '));
+      params.append('quantity', String(cart.reduce((acc, item) => acc + item.quantity, 0)));
+      params.append('price', String(total));
+      params.append('address', formData.address);
+      params.append('city', formData.city);
+      params.append('pin', formData.pin);
+      params.append('message', formData.message || 'No message');
+      
+      // Additional fields for compatibility
+      params.append('type', 'Food Order');
+      params.append('phone', formData.phone);
+      params.append('email', formData.email || 'N/A');
+      params.append('paymentMethod', paymentMethod);
+      params.append('orderDate', new Date().toLocaleString());
+      
+      console.log('Sending order details to:', scriptUrl);
 
-      await fetch(finalUrl, {
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        body: params,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
       });
 
       // Add a small delay to ensure processing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       setOrderComplete(true);
       setTimeout(() => {
@@ -1544,9 +1575,11 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         lastName: lastName,
         phone: formData.phone,
         email: 'reservation@mandairesort.com',
+        gmail: 'reservation@mandairesort.com',
         address: `Reservation Date: ${formData.date}, Time: ${formData.time}`,
         city: 'Jorhatia',
         pin: '785001',
+        message: `Reservation for ${formData.guests} guests at ${formData.time} on ${formData.date}`,
         quantity: parseInt(formData.guests, 10),
         price: 0,
         paymentMethod: 'Table Booking',
@@ -1560,17 +1593,40 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
-      Object.entries(reservationDetails).forEach(([key, value]) => {
-        params.append(key, String(value));
-      });
       
-      const finalUrl = `${scriptUrl}?${params.toString()}`;
+      // Exact fields requested by user
+      params.append('name', formData.name);
+      params.append('phone no', formData.phone);
+      params.append('gmail', 'reservation@mandairesort.com');
+      params.append('product', `Table Reservation for ${formData.guests} Guests`);
+      params.append('quantity', formData.guests);
+      params.append('price', '0');
+      params.append('address', `Reservation Date: ${formData.date}, Time: ${formData.time}`);
+      params.append('city', 'Jorhatia');
+      params.append('pin', '785001');
+      params.append('message', `Reservation for ${formData.guests} guests at ${formData.time} on ${formData.date}`);
+      
+      // Additional fields for compatibility
+      params.append('type', 'Table Reservation');
+      params.append('phone', formData.phone);
+      params.append('date', formData.date);
+      params.append('time', formData.time);
+      params.append('guests', formData.guests);
+      params.append('orderDate', new Date().toLocaleString());
+      
+      console.log('Sending reservation details to:', scriptUrl);
 
-      await fetch(finalUrl, {
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        body: params,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
       });
+
+      // Add a small delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Add a small artificial delay to ensure processing
       await new Promise(resolve => setTimeout(resolve, 1000));
