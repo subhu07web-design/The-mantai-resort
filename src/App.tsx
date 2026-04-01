@@ -415,7 +415,7 @@ const HomePage = ({ onReservationOpen }: { onReservationOpen: () => void }) => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6">
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6 touch-visible">
                     <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm shadow-2xl">ADD TO CART</button>
                   </div>
                 </div>
@@ -718,7 +718,7 @@ const MenuPage = () => {
                   <div className="absolute top-4 right-4 bg-primary/80 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold text-accent tracking-widest uppercase z-10">
                     {item.category}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6">
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-end p-6 touch-visible">
                     <button onClick={() => addToCart(item)} className="btn-secondary w-full py-3 text-sm shadow-2xl">ADD TO CART</button>
                   </div>
                 </div>
@@ -968,10 +968,43 @@ const ContactPage = () => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Thank you, ${formData.firstName}! Your message regarding "${formData.subject}" has been sent.`);
-    setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
+    setIsSubmitting(true);
+
+    try {
+      const contactDetails = {
+        type: 'Contact Inquiry',
+        name: `${formData.firstName} ${formData.lastName}`,
+        fullName: `${formData.firstName} ${formData.lastName}`,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        contactDate: new Date().toLocaleString()
+      };
+
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const params = new URLSearchParams(contactDetails as any);
+      const finalUrl = `${scriptUrl}?${params.toString()}`;
+
+      await fetch(finalUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: params,
+      });
+
+      alert(`Thank you, ${formData.firstName}! Your message regarding "${formData.subject}" has been sent.`);
+      setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      alert('There was an error sending your message. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -1106,7 +1139,13 @@ const ContactPage = () => {
                 placeholder="How can we help you?"
               ></textarea>
             </div>
-            <button type="submit" className="btn-primary w-full py-5 text-sm tracking-[0.3em] font-bold uppercase">Send Message</button>
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="btn-primary w-full py-5 text-sm tracking-[0.3em] font-bold uppercase disabled:opacity-50"
+            >
+              {isSubmitting ? "Sending..." : "Send Message"}
+            </button>
           </form>
         </div>
       </div>
@@ -1453,11 +1492,41 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const nameParts = formData.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      const reservationDetails = {
+        type: 'Table Reservation',
+        name: formData.name,
+        fullName: formData.name,
+        Name: formData.name,
+        customerName: formData.name,
+        firstName: firstName,
+        lastName: lastName,
+        phone: formData.phone,
+        date: formData.date,
+        time: formData.time,
+        guests: formData.guests,
+        numberOfGuests: formData.guests,
+        reservationDate: new Date().toLocaleString()
+      };
+
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const params = new URLSearchParams(reservationDetails as any);
+      const finalUrl = `${scriptUrl}?${params.toString()}`;
+
+      await fetch(finalUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: params,
+      });
+
       setIsSubmitting(false);
       setIsSuccess(true);
       setTimeout(() => {
@@ -1465,7 +1534,11 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         onClose();
         setFormData({ name: '', phone: '', date: '', time: '', guests: '2' });
       }, 3000);
-    }, 1500);
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      alert('There was an error booking your table. Please try again or contact us directly.');
+      setIsSubmitting(false);
+    }
   };
 
   return (

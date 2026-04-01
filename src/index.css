@@ -63,3 +63,9 @@
   @apply absolute inset-0 rounded-[inherit] border border-accent/20 -m-2 pointer-events-none;
 }
 
+@media (hover: none) {
+  .touch-visible {
+    opacity: 1 !important;
+  }
+}
+
