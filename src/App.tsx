@@ -992,7 +992,7 @@ const ContactPage = () => {
         contactDate: new Date().toLocaleString()
       };
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
       Object.entries(contactDetails).forEach(([key, value]) => {
         params.append(key, String(value));
@@ -1177,7 +1177,8 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
     email: '',
     address: '',
     city: '',
-    pin: ''
+    pin: '',
+    message: ''
   });
 
   React.useEffect(() => {
@@ -1209,9 +1210,11 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         last_name: lastName,
         phone: formData.phone,
         email: formData.email || 'N/A',
+        gmail: formData.email || 'N/A',
         address: formData.address,
         city: formData.city,
         pin: formData.pin,
+        message: formData.message || 'No message',
         product: cart.map(item => `${item.name} (x${item.quantity})`).join(', '),
         quantity: cart.reduce((acc, item) => acc + item.quantity, 0),
         price: total,
@@ -1220,7 +1223,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       };
 
       // Send data to Google Apps Script
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
       Object.entries(orderDetails).forEach(([key, value]) => {
         params.append(key, String(value));
@@ -1242,7 +1245,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
         clearCart();
         setOrderComplete(false);
         setIsCheckingOut(false);
-        setFormData({ name: '', phone: '', email: '', address: '', city: '', pin: '' });
+        setFormData({ name: '', phone: '', email: '', address: '', city: '', pin: '', message: '' });
         onClose();
       }, 3000);
     } catch (error) {
@@ -1371,6 +1374,16 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg resize-none text-white" 
                         placeholder="Your address"
+                      ></textarea>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Special Message (Optional)</label>
+                      <textarea 
+                        rows={2} 
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full px-0 py-3 bg-transparent border-b border-white/10 focus:outline-none focus:border-accent transition-colors font-serif italic text-lg resize-none text-white" 
+                        placeholder="Any special instructions?"
                       ></textarea>
                     </div>
                     <div className="space-y-4">
@@ -1545,7 +1558,7 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         reservationDate: new Date().toLocaleString()
       };
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwy5Cv1moDkY8KLoeVsKB5RKrWaEoKnZmQPtLAo6NMu2yVghxzJ9oauXfkeXH0GG-W4RQ/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
       const params = new URLSearchParams();
       Object.entries(reservationDetails).forEach(([key, value]) => {
         params.append(key, String(value));
