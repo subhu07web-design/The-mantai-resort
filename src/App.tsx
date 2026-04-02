@@ -993,7 +993,7 @@ const ContactPage = () => {
         contactDate: new Date().toLocaleString()
       };
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbx-BphXPJN9uXxmnGxGmBQWGeO_4XRBH2F6C7et2n8Z0afM8K2aRqXbFHUYLwasL3Q-sA/exec';
       const params = new URLSearchParams();
       params.append('type', 'Contact Inquiry');
       params.append('name', `${formData.firstName} ${formData.lastName}`);
@@ -1235,7 +1235,7 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       };
 
       // Send data to Google Apps Script
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbx-BphXPJN9uXxmnGxGmBQWGeO_4XRBH2F6C7et2n8Z0afM8K2aRqXbFHUYLwasL3Q-sA/exec';
       const params = new URLSearchParams();
       
       // Exact fields requested by user
@@ -1591,7 +1591,7 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         reservationDate: new Date().toLocaleString()
       };
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeA8qYiHqum68NDcgogAhHG8tAyCHoIkuaNUZwyEIECeurNwqKsiiW91pXD2-wkMCoaw/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbx-BphXPJN9uXxmnGxGmBQWGeO_4XRBH2F6C7et2n8Z0afM8K2aRqXbFHUYLwasL3Q-sA/exec';
       const params = new URLSearchParams();
       
       // Exact fields requested by user
