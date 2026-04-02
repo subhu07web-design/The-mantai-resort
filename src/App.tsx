@@ -980,45 +980,31 @@ const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      const contactDetails = {
-        type: 'Contact Inquiry',
-        name: `${formData.firstName} ${formData.lastName}`,
-        fullName: `${formData.firstName} ${formData.lastName}`,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        gmail: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        contactDate: new Date().toLocaleString()
-      };
-
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbxEHLCL_E76vUievEAd1NxA-QYsCJX1Jj9rRDK-4mQA0sFACty62KZ-0p1ur_k_Ulw8kw/exec';
       
-      const payload = {
-        type: 'contact',
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        contactDate: new Date().toLocaleString()
-      };
+      const params = new URLSearchParams();
+      params.append('type', 'contact');
+      params.append('name', `${formData.firstName} ${formData.lastName}`);
+      params.append('email', formData.email);
+      params.append('gmail', formData.email);
+      params.append('phone', 'N/A');
+      params.append('phone no', 'N/A');
+      params.append('subject', formData.subject);
+      params.append('message', formData.message);
+      params.append('contactDate', new Date().toLocaleString());
 
-      console.log('Sending contact inquiry to:', scriptUrl, payload);
+      console.log('Sending contact inquiry to:', scriptUrl);
 
       await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: params,
       });
 
       // Add a small delay to ensure processing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      alert(`Thank you, ${formData.firstName}! Your message regarding "${formData.subject}" has been sent.`);
+      alert(`Thank you, ${formData.firstName}! Your message has been sent.`);
       setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
     } catch (error) {
       console.error('Error submitting contact form:', error);
@@ -1234,31 +1220,33 @@ const CartDrawer = ({ isOpen, onClose, startCheckout = false }: { isOpen: boolea
       // Send data to Google Apps Script
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbxEHLCL_E76vUievEAd1NxA-QYsCJX1Jj9rRDK-4mQA0sFACty62KZ-0p1ur_k_Ulw8kw/exec';
       
-      const payload = {
-        type: "order",
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email || 'N/A',
-        city: formData.city,
-        pin: formData.pin,
-        address: formData.address,
-        message: formData.message || 'No message',
-        payment: paymentMethod,
-        product: cart.map(item => `${item.name} (x${item.quantity})`).join(', '),
-        quantity: cart.reduce((acc, item) => acc + item.quantity, 0),
-        price: total
-      };
+      const params = new URLSearchParams();
+      params.append('type', 'order');
+      params.append('name', formData.name);
+      params.append('phone', formData.phone);
+      params.append('phone no', formData.phone);
+      params.append('email', formData.email || 'N/A');
+      params.append('gmail', formData.email || 'N/A');
+      params.append('city', formData.city);
+      params.append('pin', formData.pin);
+      params.append('address', formData.address);
+      params.append('message', formData.message || 'No message');
+      params.append('payment', paymentMethod);
+      params.append('product', cart.map(item => `${item.name} (x${item.quantity})`).join(', '));
+      params.append('quantity', String(cart.reduce((acc, item) => acc + item.quantity, 0)));
+      params.append('price', String(total));
+      params.append('orderDate', new Date().toLocaleString());
 
-      console.log('Sending order details to:', scriptUrl, payload);
+      console.log('Sending order details to:', scriptUrl);
 
       await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: params,
       });
+
+      // Add a small delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       alert('Order placed successfully!');
 
@@ -1584,25 +1572,27 @@ const ReservationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbxEHLCL_E76vUievEAd1NxA-QYsCJX1Jj9rRDK-4mQA0sFACty62KZ-0p1ur_k_Ulw8kw/exec';
       
-      const payload = {
-        type: "booking",
-        name: formData.name,
-        phone: formData.phone,
-        date: formData.date,
-        time: formData.time,
-        guests: formData.guests
-      };
+      const params = new URLSearchParams();
+      params.append('type', 'booking');
+      params.append('name', formData.name);
+      params.append('phone', formData.phone);
+      params.append('phone no', formData.phone);
+      params.append('gmail', 'reservation@mandairesort.com');
+      params.append('date', formData.date);
+      params.append('time', formData.time);
+      params.append('guests', formData.guests);
+      params.append('bookingDate', new Date().toLocaleString());
 
-      console.log('Sending booking details to:', scriptUrl, payload);
+      console.log('Sending booking details to:', scriptUrl);
 
       await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: params,
       });
+
+      // Add a small delay to ensure processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       setIsSubmitting(false);
       setIsSuccess(true);
